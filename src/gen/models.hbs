@@ -1,0 +1,86 @@
+var mongoose = require('mongoose'),
+	relationship = require('mongoose-relationship'),
+	{{#if model.has.password}}
+	bcrypt = require('bcrypt'),
+	SALT_WORK_FACTOR = 10,
+	{{/if}}
+	Schema = mongoose.Schema;
+
+var {{model.name.pascal}}Schema = new Schema({
+	{{#details}}
+	{{detail.name.snake}}: {{#if detail.multiple}}[{{/if}}{
+		{{#if detail.default.create}}
+		default: '{{detail.default.create}}',
+		{{/if}}
+		{{#if detail.is.select}}
+		enum: [{{#options}}'{{option}}'{{#unless @last}},{{/unless}}{{/options}}],
+		{{/if}}
+		{{#if detail.is.child}}
+		ref: '{{detail.association.model.name.pascal}}',
+		{{/if}}
+		{{#if detail.is.parent}}
+		childPath: '{{detail.association.detail.name.lower}}',
+		ref: '{{detail.association.model.name.pascal}}',
+		{{/if}}
+		{{#if detail.required}}
+		required: true,
+		{{/if}}
+		type: {{detail.type}},
+		{{#if detail.unique.is.bool}}
+		index: {
+			unique: {{detail.unique.value}}
+		}
+		{{/if}}
+	}{{#if detail.multiple}}]{{/if}},
+	{{/details}}
+});
+
+{{#details}}
+{{#if detail.is.parent}}
+{{model.name.pascal}}Schema.plugin(relationship, { relationshipPathName: '{{detail.name.snake}}' });
+{{/if}}
+{{/details}}
+
+{{#if model.has.password}}
+{{model.name.pascal}}Schema.pre('save', function(next) {
+	var {{model.name.snake}} = this;
+	
+	// only hash the password if it has been modified (or is new)
+	if (!{{model.name.snake}}.isModified('password')) return next();
+	
+	// generate a salt
+	bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+		if (err) return next(err);
+		
+		// hash the password using our new salt
+		bcrypt.hash({{model.name.snake}}.password, salt, function(err, hash) {
+			if (err) return next(err);
+			
+			// override the cleartext password with the hashed one
+			{{model.name.snake}}.password = hash;
+			next();
+		});
+	});
+});
+
+{{model.name.pascal}}Schema.methods.validPassword = function(candidatePassword, cb) {
+	bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+		if (err) return cb(err);
+		cb(null, isMatch);
+	});
+};
+{{/if}}
+
+var {{model.name.pascal}} = mongoose.model('{{model.name.pascal}}', {{model.name.pascal}}Schema);
+
+{{#details}}
+{{#if unique.is.model}}
+{{model.name.pascal}}.schema.path('{{name.snake}}').validate(function (value, respond) {
+	{{model.name.pascal}}.findOne({ {{name.snake}}: value, {{unique.model.name.snake}}: this.{{unique.model.name.snake}} }, function (err, result) {
+		respond(result ? false : true);
+	});
+}, '{{name.snake}} is not unique for {{unique.model.name.snake}}');
+{{/if}}
+{{/details}}
+
+module.exports = {{name.pascal}};

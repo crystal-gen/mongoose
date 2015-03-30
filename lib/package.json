@@ -1,0 +1,11 @@
+{
+	
+	"name": "mongoose",
+	"version": "1.0.5",
+	"description": "Mongoose Generator for [Crystal](https://crystalcodegen.com).",
+	
+	"dependencies": {
+		"mongoose": "latest",
+		"mongoose-relationship": "latest"
+	}
+}
