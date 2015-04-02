@@ -1,6 +1,6 @@
 name: mongoose
 version: 0.1.0
-description: "Mongoose Generator for [Crystal](https://crystalcodegen.com)."
+description: "Mongoose Generator for [Crystal](http://crystal.sh)."
 
 author:
   name: Chris Tate

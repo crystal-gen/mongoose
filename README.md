@@ -1,3 +1,3 @@
-# mongoose v1.0.5
+# mongoose v0.1.0
 
-Mongoose Generator for [Crystal](https://crystalcodegen.com).
+Mongoose Generator for [Crystal](http://crystal.sh).
