@@ -5,3 +5,7 @@ description: mongoose test
 generators:
   mongoose:
     version: latest
+
+specifications:
+  twitter:
+    version: latest

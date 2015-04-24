@@ -1,0 +1,15 @@
+bool: Boolean
+child: Schema.ObjectId
+created: Date
+date: Date
+decimal: Number
+deleted: Date
+email: String
+number: Number
+parent: Schema.ObjectId
+password: String
+select: String
+string: String
+text: String
+time: Date
+updated: Date
